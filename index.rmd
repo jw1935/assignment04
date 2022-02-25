@@ -62,3 +62,23 @@ df1%>%
   geom_smooth(method='lm')+
   labs(title="Scatter plot of years of immigrantion and socioeconomic status",x="years in the US",y="Socioeconomic index",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")
 ```
+
+# relationship between food insecurty and mental health
+```{r}
+df3 <- read_csv("data/adult19.csv")
+df3 %>%
+  mutate(foodinsecurity = if_else(FDSCAT4_A ==8,NA_real_,FDSCAT4_A))%>%
+  mutate(GADCAT_A = if_else(GADCAT_A ==8,NA_real_,GADCAT_A))%>%
+  filter(SEX_A==1|SEX_A==2)%>%
+  mutate(Gender = factor(SEX_A,levels=c(1,2),labels=c("Male","Female")))%>%
+  ggplot(aes(foodinsecurity,GADCAT_A))+
+  geom_jitter(width=1,height=1, aes(color = Gender))+
+  geom_smooth(method='lm')+
+  facet_wrap(~Gender)+
+  labs(title="Scatter plot of anxiety symptoms and food insecurity",x="Severity of food insecurity in the US",y="Scores of anxiety symptoms",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")
+```
+
+
+
+
+
