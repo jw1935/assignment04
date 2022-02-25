@@ -31,8 +31,7 @@ df <- read_ipums_micro(ddi)
 • Five different geoms;
 • Two different scales (meaning change the default scale used for at least two aesthetics).
 
-# Differences in socioeconomic status between native born and foreign born Chinese Americans
-
+#Distribution of years of immigrantion to the US
 ```{r}
 df1<-df %>% 
   filter(RACE==4)%>%
@@ -41,6 +40,20 @@ df1<-df %>%
 df1$foreign <- factor(df1$foreign,levels=c(0,1),labels=c("Native born","Foreign born"))
 
 df1%>%
+  filter(RACE==4)%>%
+  mutate(foreign=1)%>%
+  ggplot()+
+  geom_histogram(aes(YRSUSA1))+
+  labs(title="Distribution of years of immigrantion to the US among foreign born Chinese Americans",x="Years moving to the US",y="Count",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")+
+  scale_y_continuous(limits=c(0,20000))
+```
+
+We can tell from the graph that among first-generation immigrants, monst 
+
+# Differences in socioeconomic status between native born and foreign born Chinese Americans
+
+```{r}
+df1%>%
   mutate(Nativity=foreign)%>%
   filter(HWSEI!=0000)%>%
   group_by(Nativity)%>%
@@ -48,7 +61,8 @@ df1%>%
   ggplot(aes(x=Nativity,y=mean,fill=Nativity))+
   geom_col()+
   geom_errorbar(aes(ymin=mean-se,ymax=mean+se))+
-  labs(title="Comparison of socioeconomic status between native born and foreign born \nChinese Americans",subtitle="-Hauser and Warren socioeconomic index",y="Socioeconomic index",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")
+  labs(title="Comparison of socioeconomic status between native born and foreign born \nChinese Americans",subtitle="-Hauser and Warren socioeconomic index",y="Socioeconomic index",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")+
+  scale_fill_hue()
 ```
 
 # relationship between years moved to the US and socioeconomic status among foreign born Chinese Americans
@@ -57,8 +71,10 @@ df1%>%
 df1%>%
   mutate(foreign=1)%>%
   filter(HWSEI!=0000)%>%
+  filter(SEX==1|SEX==2)%>%
+  mutate(Gender = factor(SEX,levels=c(1,2),labels=c("Male","Female")))%>%
   ggplot(aes(YRSUSA1,HWSEI))+
-  geom_point(position="jitter")+
+  geom_point(aes(shape=Gender),position="jitter")+
   geom_smooth(method='lm')+
   labs(title="Scatter plot of years of immigrantion and socioeconomic status",x="years in the US",y="Socioeconomic index",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")
 ```
@@ -75,10 +91,9 @@ df3 %>%
   geom_jitter(width=1,height=1, aes(color = Gender))+
   geom_smooth(method='lm')+
   facet_wrap(~Gender)+
-  labs(title="Scatter plot of anxiety symptoms and food insecurity",x="Severity of food insecurity in the US",y="Scores of anxiety symptoms",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")
+  labs(title="Scatter plot of anxiety symptoms and food insecurity",x="Severity of food insecurity in the US",y="Scores of anxiety symptoms",caption="Data source: IPUMS USA, University of Minnesota, www.ipums.org.")+
+  scale_color_manual(values = c("#00AFBB", "#E7B800"))
 ```
-
-
 
 
 
